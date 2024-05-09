@@ -16,18 +16,23 @@ class Scheduling extends Model
         'start_time',
         'end_time',
         'status',
-        'service_id'
+        // 'service_id'
     ];
 
     protected $dates = ['deleted_at', 'start_time', 'end_time'];
 
-    public function service()
+    public function services_schedulings()
     {
-        return $this->belongsTo(Service::class, 'service_id');
+        return $this->hasMany(ServiceScheduling::class, 'scheduling_id');
     }
+    
+    // public function service()
+    // {
+    //     return $this->belongsTo(Service::class, 'service_id');
+    // }
 
-    public function getServiceName(): ?string
-    {
-        return $this->service->name ?? null;
-    }
+    // public function getServiceName(): ?string
+    // {
+    //     return $this->service->name ?? null;
+    // }
 }

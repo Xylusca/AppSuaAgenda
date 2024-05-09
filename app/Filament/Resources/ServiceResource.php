@@ -7,6 +7,7 @@ use App\Filament\Resources\ServiceResource\RelationManagers;
 use App\Models\Service;
 use Filament\Forms;
 use Filament\Forms\Components\FileUpload;
+use Filament\Forms\Components\Section;
 use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Form;
@@ -24,37 +25,45 @@ class ServiceResource extends Resource
 {
     protected static ?string $model = Service::class;
 
-    protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
+    protected static ?string $modelLabel = 'Serviço';
+
+    protected static ?string $pluralModelLabel = 'Serviços';
+
+    protected static ?string $navigationGroup = 'Configurações de Agendamentos';
+
+    protected static ?string $navigationIcon = 'heroicon-s-shopping-bag';
 
     public static function form(Form $form): Form
     {
         return $form
             ->schema([
-                TextInput::make('name')
-                    ->label('Nome')
-                    ->required()
-                    ->minLength(2)
-                    ->maxLength(255)
-                    ->columnSpanFull(),
-                TextInput::make('price')
-                    ->label('Preço')
-                    ->currencyMask(thousandSeparator: '.', decimalSeparator: ',', precision: 2)
-                    ->required(),
-                TextInput::make('duration')
-                    ->label('Duração')
-                    ->integer()
-                    ->suffix('min')
-                    ->maxLength(11)
-                    ->required(),
-                Textarea::make('desc')
-                    ->label('Descrição')
-                    ->columnSpanFull(),
-                FileUpload::make('image_path')
-                    ->label('Imagem')
-                    ->directory('service')
-                    ->image()
-                    ->imageCropAspectRatio('4:3')
-                    ->columnSpanFull()
+                Section::make()->schema([
+                    TextInput::make('name')
+                        ->label('Nome')
+                        ->required()
+                        ->minLength(2)
+                        ->maxLength(255)
+                        ->columnSpanFull(),
+                    TextInput::make('price')
+                        ->label('Preço')
+                        ->currencyMask(thousandSeparator: '.', decimalSeparator: ',', precision: 2)
+                        ->required(),
+                    TextInput::make('duration')
+                        ->label('Duração')
+                        ->integer()
+                        ->suffix('min')
+                        ->maxLength(11)
+                        ->required(),
+                    Textarea::make('desc')
+                        ->label('Descrição')
+                        ->columnSpanFull(),
+                    FileUpload::make('image_path')
+                        ->label('Imagem')
+                        ->directory('service')
+                        ->image()
+                        ->imageCropAspectRatio('4:3')
+                        ->columnSpanFull()
+                ])
             ]);
     }
 
