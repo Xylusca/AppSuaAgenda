@@ -1,7 +1,11 @@
 <nav class="bg-gray-200 dark:bg-gray-900 shadow">
     <div class="max-w-screen-xl flex flex-wrap items-center justify-between mx-auto p-4">
-        <a href="https://flowbite.com/" class="flex items-center space-x-3 rtl:space-x-reverse">
-            <span class="self-center text-2xl font-bold whitespace-nowrap dark:text-white">{{ config('app.name') }}</span>
+        <a href="#" class="flex items-center space-x-3 rtl:space-x-reverse">
+            <!-- <img src="{{ asset('img/logo-nd-branquelo-fundo.png') }}" alt="logo" width="0px"> -->
+            <div class="flex flex-col">
+                <span class="self-center text-shantell-sans-ita ml-3 text-xs font-bold whitespace-nowrap dark:text-white" style="margin-left: 7px; margin-bottom: -7px;">Cortes</span>
+                <span class="self-center text-shantell-sans-ita text-3xl font-bold whitespace-nowrap dark:text-white">NANDO</span>
+            </div>
         </a>
         <div class="flex md:order-2">
             <button id="theme-toggle" type="button" class="text-gray-500 dark:text-gray-400 dark:hover:bg-gray-700 focus:outline-none focus:ring-4 focus:ring-gray-200 dark:focus:ring-gray-700 rounded-lg text-sm p-2.5">

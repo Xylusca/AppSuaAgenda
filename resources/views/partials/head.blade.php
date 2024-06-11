@@ -18,6 +18,7 @@
     }
 </style>
 
+<link rel="icon" href="{{asset('imgs/logo-nd-branquelo-fundo.png')}}" type="image/x-icon">
 
 <link href="{{asset('css/filament/forms/forms.css')}}" rel="stylesheet" />
 <link href="{{asset('css/filament/support/support.css')}}" rel="stylesheet" />
@@ -98,6 +99,9 @@
 <!-- Fonts -->
 <link rel="preconnect" href="https://fonts.bunny.net">
 <link href="{{ asset('css/fonts.bunny.css') }}" rel="stylesheet" />
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Shantell+Sans:ital,wght@0,300..800;1,300..800&display=swap" rel="stylesheet">
 
 <style>
     :root {
@@ -105,6 +109,11 @@
         --sidebar-width: 20rem;
         --collapsed-sidebar-width: 4.5rem;
         --default-theme-mode: system;
+    }
+
+    .text-shantell-sans-ita {
+        font-family: "Shantell Sans", cursive;
+        font-style: italic;
     }
 
     .fc-toolbar-title {

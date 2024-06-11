@@ -30,6 +30,7 @@ class AdminPanelProvider extends PanelProvider
             ->id('admin')
             ->path('admin')
             ->login()
+            ->favicon(asset('imgs/logo-nd-branquelo-fundo.png'))
             ->profile(EditProfile::class)
             ->colors([
                 'danger' => Color::Rose,

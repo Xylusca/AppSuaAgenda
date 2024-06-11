@@ -150,7 +150,6 @@ function calendarScheduling() {
                 right: 'prev,next'
             },
             contentHeight: 400,
-            initialDate: '2024-05-12',
             locale: 'pt-br',
             initialView: 'dayGridMonth',
             events: function (fetchInfo, successCallback, failureCallback) {
