@@ -6,6 +6,7 @@ use App\Filament\Resources\SchedulingsResource\Pages;
 use App\Filament\Resources\SchedulingsResource\RelationManagers;
 use App\Models\Scheduling;
 use App\Models\Service;
+use Coolsam\FilamentFlatpickr\Forms\Components\Flatpickr;
 use Filament\Forms;
 use Filament\Forms\Components\DateTimePicker;
 use Filament\Forms\Components\Section;
@@ -35,42 +36,46 @@ class SchedulingsResource extends Resource
     {
         return $form
             ->schema([
-                Section::make()->schema([
-                    TextInput::make('name')
-                        ->label('Nome Do Cliente')
-                        ->required()
-                        ->minLength(2)
-                        ->maxLength(255),
-                    TextInput::make('whats')
-                        ->label('WhatsApp')
-                        ->tel()
-                        ->mask('(99) 99999-9999')
-                        ->maxLength(15)
-                        ->required(),
-                    DateTimePicker::make('start_time')
-                        ->label('Início')
-                        ->seconds(false)
-                        ->displayFormat('d/m/Y')
-                        ->required(),
-                    DateTimePicker::make('end_time')
-                        ->label('Encerramento')
-                        ->seconds(false)
-                        ->required(),
-                    Select::make('status')
-                        ->label('Status')
-                        ->options([
-                            'Concluído' => 'Concluído',
-                            'Cancelado' => 'Cancelado',
-                            'Aguardando' => 'Aguardando',
-                        ])
-                        ->required(),
-                    Select::make('services_schedulings')
-                        ->label('Servicos')
-                        ->multiple()
-                        // ->relationship('services_schedulings.service', 'name')
-                        ->options(Service::all()->pluck('name', 'id'))
-                        ->searchable()
-                ])
+                Section::make()
+                    ->schema([
+                        TextInput::make('name')
+                            ->label('Nome Do Cliente')
+                            ->required()
+                            ->minLength(2)
+                            ->maxLength(255),
+                        TextInput::make('whats')
+                            ->label('WhatsApp')
+                            ->tel()
+                            ->mask('(99) 99999-9999')
+                            ->maxLength(15)
+                            ->required(),
+                        Flatpickr::make('start_time')
+                            ->label('Início')
+                            ->dateFormat('d/m/Y H:i')
+                            ->enableTime()
+                            ->use24hr(true)
+                            ->required(),
+                        Flatpickr::make('end_time')
+                            ->label('Encerramento')
+                            ->dateFormat('d/m/Y H:i')
+                            ->enableTime()
+                            ->use24hr(true)
+                            ->required(),
+                        Select::make('status')
+                            ->label('Status')
+                            ->options([
+                                'Concluído' => 'Concluído',
+                                'Cancelado' => 'Cancelado',
+                                'Aguardando' => 'Aguardando',
+                            ])
+                            ->required(),
+                        Select::make('services_schedulings')
+                            ->label('Servicos')
+                            ->multiple()
+                            // ->relationship('services_schedulings.service', 'name')
+                            ->options(Service::all()->pluck('name', 'id'))
+                            ->searchable()
+                    ])
             ]);
     }
 
@@ -84,10 +89,10 @@ class SchedulingsResource extends Resource
                     ->label('WhatsApp'),
                 TextColumn::make('start_time')
                     ->label('Início')
-                    ->dateTime(),
+                    ->dateTime('d/m/Y H:i', 'America/Sao_Paulo'),
                 TextColumn::make('end_time')
                     ->label('Encerramento')
-                    ->dateTime(),
+                    ->dateTime('d/m/Y H:i', 'America/Sao_Paulo'),
                 TextColumn::make('status')
                     ->label('Status')
                     ->badge()

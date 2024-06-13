@@ -46,6 +46,7 @@ class ServiceResource extends Resource
                         ->columnSpanFull(),
                     TextInput::make('price')
                         ->label('Preço')
+                        ->prefix('R$')
                         ->currencyMask(thousandSeparator: '.', decimalSeparator: ',', precision: 2)
                         ->required(),
                     TextInput::make('duration')
