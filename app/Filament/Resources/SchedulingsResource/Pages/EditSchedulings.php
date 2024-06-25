@@ -21,7 +21,7 @@ class EditSchedulings extends EditRecord
         $services_schedulings = $services_schedulings->services_schedulings->toArray();
 
         $services_ids = array_map(function ($service) {
-            return $service['service_id']; 
+            return $service['service_id'];
         }, $services_schedulings);
 
         $data['end_time'] = Carbon::createFromFormat('Y-m-d H:i:s', $data['end_time'])
@@ -37,6 +37,13 @@ class EditSchedulings extends EditRecord
 
     protected function handleRecordUpdate(Model $record, array $data): Model
     {
+
+        $data['end_time'] = Carbon::createFromFormat('d/m/Y H:i', $data['end_time'])
+            ->format('Y-m-d H:i:s');
+
+        $data['start_time'] = Carbon::createFromFormat('d/m/Y H:i', $data['start_time'])
+            ->format('Y-m-d H:i:s');
+            
         $existingServiceSchedulings = $record->services_schedulings->pluck('service_id')->toArray();
 
         $newServiceSchedulings = isset($data['services_schedulings']) ? (array)$data['services_schedulings'] : [];

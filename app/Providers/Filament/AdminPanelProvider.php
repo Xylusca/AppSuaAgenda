@@ -18,6 +18,7 @@ use Illuminate\Routing\Middleware\SubstituteBindings;
 use Illuminate\Session\Middleware\AuthenticateSession;
 use Illuminate\Session\Middleware\StartSession;
 use Illuminate\View\Middleware\ShareErrorsFromSession;
+use Saade\FilamentFullCalendar\FilamentFullCalendarPlugin;
 use Spatie\Color\Hex;
 
 class AdminPanelProvider extends PanelProvider
@@ -61,6 +62,18 @@ class AdminPanelProvider extends PanelProvider
                 DisableBladeIconComponents::class,
                 DispatchServingFilamentEvent::class,
             ])
+            ->plugin(
+                FilamentFullCalendarPlugin::make()
+                    // ->schedulerLicenseKey()
+                    // ->selectable()
+                    // ->editable()
+                    // ->timezone()
+                    // ->locale()
+                    // ->plugins()
+                    ->config([
+                        'dayMaxEvents' => true
+                    ])
+            )
             ->authMiddleware([
                 Authenticate::class,
             ]);

@@ -15,24 +15,7 @@ class ProductCounter extends BaseWidget
 
         $monthScheduleAnalysis = $this->monthScheduleCount();
 
-        // $currentDate = Carbon::now();
-
-        // $firstDayCurrentMonth = $currentDate->copy()->startOfMonth();
-        // $lastDayCurrentMonth = $currentDate->copy()->endOfMonth();
-
-        // $currentMonthTotalPrice = Scheduling::where('status', 'Concluído')
-        //     ->whereHas('services_schedulings', function ($query) use ($firstDayCurrentMonth, $lastDayCurrentMonth) {
-        //         $query->whereBetween('start_time', [$firstDayCurrentMonth, $lastDayCurrentMonth]);
-        //     })
-        //     ->with(['services_schedulings' => function ($query) use ($firstDayCurrentMonth, $lastDayCurrentMonth) {
-        //         $query->whereBetween('start_time', [$firstDayCurrentMonth, $lastDayCurrentMonth]);
-        //     }])
-        //     ->get()
-        //     ->pluck('services_schedulings')
-        //     ->flatten()
-        //     ->sum('price');
-
-        // dd($currentMonthTotalPrice);
+        $monthlyAnalysisProfit = $this->monthlyAnalysisProfit();
 
         return [
             Stat::make('Análise Anual de Agendamentos', $annualScheduleAnalysis['currentYear'])
@@ -43,10 +26,10 @@ class ProductCounter extends BaseWidget
                 ->description($monthScheduleAnalysis['differentiates'])
                 ->descriptionIcon($monthScheduleAnalysis['descriptionIcon'])
                 ->color($monthScheduleAnalysis['color']),
-            Stat::make('Lucro Mensal dos Agendamentos', 'R$ 1.800,00')
-                ->description('R$254 Aumento')
-                ->descriptionIcon('heroicon-m-arrow-trending-up')
-                ->color('success'),
+            Stat::make('Lucro Mensal dos Agendamentos', $monthlyAnalysisProfit['profiCurrentMonth'])
+                ->description($monthlyAnalysisProfit['differentiates'])
+                ->descriptionIcon($monthlyAnalysisProfit['descriptionIcon'])
+                ->color($monthlyAnalysisProfit['color']),
         ];
     }
 
@@ -142,6 +125,64 @@ class ProductCounter extends BaseWidget
             return [
                 'currentMonth' => $currentMonthCount,
                 'differentiates' => $differentiates . ' Reduziu',
+                'color' => 'danger',
+                'descriptionIcon' => 'heroicon-m-arrow-trending-down'
+            ];
+        }
+    }
+
+    protected function monthlyAnalysisProfit(): array
+    {
+        $currentDate = Carbon::now();
+
+        $firstDayCurrentMonth = $currentDate->copy()->startOfMonth();
+        $lastDayCurrentMonth = $currentDate->copy()->endOfMonth();
+
+        $firstDayLastMonth = $currentDate->copy()->subMonth()->startOfMonth();
+        $lastDayLastMonth = $currentDate->copy()->subMonth()->endOfMonth();
+
+        $profitCurrentMonth = Scheduling::where('status', 'Concluído')
+            ->whereBetween('start_time', [$firstDayCurrentMonth, $lastDayCurrentMonth])
+            ->with('services_schedulings.service')
+            ->get();
+
+        $profitLastMonth = Scheduling::where('status', 'Concluído')
+            ->whereBetween('start_time', [$firstDayLastMonth, $lastDayLastMonth])
+            ->with('services_schedulings.service')
+            ->get();
+
+        $TotalProfitCurrentMonth = 0;
+        $TotalProfitLastMonth = 0;
+
+        foreach ($profitCurrentMonth as $scheduling) {
+            foreach ($scheduling->services_schedulings as $serviceScheduling) {
+                $service = $serviceScheduling->service;
+                $TotalProfitCurrentMonth += $service->price;
+            }
+        }
+
+        foreach ($profitLastMonth as $scheduling) {
+            foreach ($scheduling->services_schedulings as $serviceScheduling) {
+                $service = $serviceScheduling->service;
+                $TotalProfitLastMonth += $service->price;
+            }
+        }
+
+        if ($TotalProfitCurrentMonth >= $TotalProfitLastMonth) {
+            $differentiates = $TotalProfitCurrentMonth - $TotalProfitLastMonth;
+
+            return [
+                'profiCurrentMonth' => 'R$ ' . number_format($TotalProfitCurrentMonth, 2, ',', '.'),
+                'differentiates' => 'R$ ' . number_format($differentiates, 2, ',', '.') . ' Aumento',
+                'color' => 'success',
+                'descriptionIcon' => 'heroicon-m-arrow-trending-up'
+            ];
+        } else {
+            $differentiates = $TotalProfitLastMonth - $TotalProfitCurrentMonth;
+
+            return [
+                'profiCurrentMonth' => 'R$ ' . number_format($TotalProfitCurrentMonth, 2, ',', '.'),
+                'differentiates' => 'R$ ' . number_format($differentiates, 2, ',', '.') . ' Reduziu',
                 'color' => 'danger',
                 'descriptionIcon' => 'heroicon-m-arrow-trending-down'
             ];

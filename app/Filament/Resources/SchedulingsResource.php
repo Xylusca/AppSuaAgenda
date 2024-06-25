@@ -9,6 +9,7 @@ use App\Models\Service;
 use Coolsam\FilamentFlatpickr\Forms\Components\Flatpickr;
 use Filament\Forms;
 use Filament\Forms\Components\DateTimePicker;
+use Filament\Forms\Components\Grid;
 use Filament\Forms\Components\Section;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TextInput;
@@ -49,32 +50,37 @@ class SchedulingsResource extends Resource
                             ->mask('(99) 99999-9999')
                             ->maxLength(15)
                             ->required(),
-                        Flatpickr::make('start_time')
-                            ->label('Início')
-                            ->dateFormat('d/m/Y H:i')
-                            ->enableTime()
-                            ->use24hr(true)
-                            ->required(),
-                        Flatpickr::make('end_time')
-                            ->label('Encerramento')
-                            ->dateFormat('d/m/Y H:i')
-                            ->enableTime()
-                            ->use24hr(true)
-                            ->required(),
-                        Select::make('status')
-                            ->label('Status')
-                            ->options([
-                                'Concluído' => 'Concluído',
-                                'Cancelado' => 'Cancelado',
-                                'Aguardando' => 'Aguardando',
+                        Grid::make()
+                            ->schema([
+                                Flatpickr::make('start_time')
+                                    ->label('Início')
+                                    ->dateFormat('d/m/Y H:i')
+                                    ->enableTime()
+                                    // ->locale('pt')
+                                    ->altInputClass('sample-pt')
+                                    ->use24hr(true)
+                                    ->required(),
+                                Flatpickr::make('end_time')
+                                    ->label('Encerramento')
+                                    ->dateFormat('d/m/Y H:i')
+                                    ->enableTime()
+                                    ->use24hr(true)
+                                    ->required(),
+                                Select::make('status')
+                                    ->label('Status')
+                                    ->options([
+                                        'Concluído' => 'Concluido',
+                                        'Cancelado' => 'Cancelado',
+                                        'Aguardando' => 'Aguardando',
+                                    ])
+                                    ->searchable()
+                                    ->required(),
+                                Select::make('services_schedulings')
+                                    ->label('Serviços')
+                                    ->multiple()
+                                    ->options(Service::all()->pluck('name', 'id'))
+                                    ->searchable()
                             ])
-                            ->required(),
-                        Select::make('services_schedulings')
-                            ->label('Servicos')
-                            ->multiple()
-                            // ->relationship('services_schedulings.service', 'name')
-                            ->options(Service::all()->pluck('name', 'id'))
-                            ->searchable()
                     ])
             ]);
     }
