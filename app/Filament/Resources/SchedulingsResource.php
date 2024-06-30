@@ -56,7 +56,6 @@ class SchedulingsResource extends Resource
                                     ->label('Início')
                                     ->dateFormat('d/m/Y H:i')
                                     ->enableTime()
-                                    // ->locale('pt')
                                     ->altInputClass('sample-pt')
                                     ->use24hr(true)
                                     ->required(),

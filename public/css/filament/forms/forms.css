@@ -47,11 +47,3 @@ easymde/dist/easymde.min.css:
    * @license MIT
    *)
 */
-
-.filament-fullcalendar .fc-more-popover {
-  background-color: #f9fafb; /* bg-gray-50 */
-}
-
-.dark .filament-fullcalendar .fc-more-popover {
-  background-color: #1f2937; /* bg-gray-800 */
-}
