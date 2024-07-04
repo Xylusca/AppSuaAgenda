@@ -44,7 +44,7 @@ function showSchedulingAvailableTime() {
     $('#calendar_cont').addClass('hidden');
 }
 
-// Cart 
+// Cart
 $(document).ready(function () {
     var cartCount = document.getElementById('cart-count');
 
@@ -107,10 +107,10 @@ $(document).ready(function () {
                         <td class="py-4">${item.duration} min</td>
                         <td class="py-4">
                             <button class="remove-item" data-id="${item.id}">
-                                <img class="danger-svg" src="/vendor/blade-heroicons/c-trash.svg" style="margin-left: .5rem; width: 1.5rem;" alt="excluir"> 
+                                <img class="danger-svg" src="/vendor/blade-heroicons/c-trash.svg" style="margin-left: .5rem; width: 1.5rem;" alt="excluir">
                             </button>
                         </td>
-                    </tr> 
+                    </tr>
                 `);
 
             totalDuration += item.duration;
@@ -135,8 +135,9 @@ $(document).ready(function () {
 
 });
 
-// Calendar 
+// Calendar
 function calendarScheduling() {
+    // $('#load').removeClass('hidden')
     if (cart.length > 0) {
         showCalender();
 
@@ -164,6 +165,8 @@ function calendarScheduling() {
                     dataType: 'json',
                     success: function (response) {
                         successCallback(response);
+                        calendar.render()
+                        // $('#load').addClass('hidden')
                     },
                     error: function (xhr, status, error) {
                         if (xhr.responseJSON && xhr.responseJSON.errors) {
@@ -190,30 +193,29 @@ function calendarScheduling() {
             }
         });
 
-        calendar.render();
     } else {
+        $('#load').addClass('hidden')
         showNotification('Por favor, adicione um produto ao carrinho!', 'warning');
     }
+
 }
 
 // Available Time
 function time_available(time, date) {
-    // Certifique-se de que o jQuery está carregado e pronto
     $(document).ready(function () {
-        // Seleciona a div com id 'time_available'
         var $div = $('#time_available');
 
-        // Limpa qualquer conteúdo anterior da div
         $div.empty();
 
-        // Converte a data para o formato desejado
-        var formattedDate = new Date(date).toLocaleDateString('pt-BR');
+        var formattedDate = formatarDataExtenso(date);
 
-        // Adiciona a data formatada à div
-        var $dateHeader = $('<h2></h2>').text(formattedDate).addClass('text-center font-bold text-xl mb-2 select-none');
-        $div.append($dateHeader);
+        $div.append(
+            '<div class="bkfd text-center p-2 rounded">' +
+            '   <h2 class="text-center font-bold text-xl mb-2">Horários Disponíveis</h2>' +
+            '   <p class="text-sm">Seu agendamento é para o dia <strong>' + formattedDate + '</strong>. Clique nos horários em <strong class="text-green">verde</strong> abaixo para continuar.</p>' +
+            '</div>'
+        );
 
-        // Cria uma nova lista não ordenada (ul) e aplica estilos de Flexbox
         var $ul = $('<ul></ul>').css({
             'display': 'flex',
             'flex-wrap': 'wrap',
@@ -223,9 +225,7 @@ function time_available(time, date) {
             'margin': '0'
         });
 
-        // Itera sobre o array 'time'
         time.forEach(function (item) {
-            // Para cada item no array, cria um novo item de lista (li)
             var $li = $('<li></li>').text(item.replace(/:\d{2}(?=\s|$)/, '')).addClass('rounded-full text-center select-none').css({
                 'background': '#7d9161',
                 'width': '6rem',
@@ -234,11 +234,14 @@ function time_available(time, date) {
                 'color': 'white',
             });
 
-            // Adiciona o item de lista à lista não ordenada
             $ul.append($li);
 
-            // Adiciona um evento de clique ao item de lista
             $li.on('click', function () {
+                var formattedDatePt = formatarDataExtenso(date);
+                $('#StrongDateAvailableTime').empty();
+                $('#StrongDateAvailableTime').append(formattedDatePt + " ás " + item);
+
+                var formattedDate = new Date(date).toLocaleDateString('pt-BR');
                 $('#schedulingData').val(formattedDate + " " + item);
 
                 if (localStorage.getItem('name') && localStorage.getItem('whatsapp')) {
@@ -251,13 +254,14 @@ function time_available(time, date) {
 
         });
 
-        // Adiciona a lista não ordenada à div
         $div.append($ul);
     });
 }
 
 //  Scheduling Available Time
 function scheduling(dateTime) {
+    $('#load').removeClass('hidden')
+
     var name = $('#name').val();
     var whatsapp = $('#whatsapp').val();
 
@@ -283,12 +287,14 @@ function scheduling(dateTime) {
                 if (response['type'] === "success") {
                     showNotification(response['message'], response['type']);
                 } else {
-                    showNotification("Ocorreu um erro desconhecido.", 'danger');
+                    showNotification(response['message'], response['type']);
                 }
 
                 setTimeout(function () {
                     $('.fi-modal-close-btn').click();
-                }, 500);
+                }, 3);
+
+                $('#load').addClass('hidden')
             },
             error: function (xhr, status, error) {
                 if (xhr.responseJSON && xhr.responseJSON.errors) {
@@ -305,10 +311,24 @@ function scheduling(dateTime) {
                     showNotification("Ocorreu um erro desconhecido.", 'danger');
                 }
 
+                $('#load').addClass('hidden')
                 failureCallback(error);
             }
         });
     } else {
         showNotification("Por favor, preencha os campos 'Nome Completo' e 'WhatsApp'", 'warning');
+        $('#load').addClass('hidden')
     }
+}
+
+// Função para formatar a data no formato desejado
+function formatarDataExtenso(data) {
+    // Cria uma nova data a partir do objeto Date recebido
+    var dataObjeto = new Date(data);
+
+    // Opções para formatar a data
+    var opcoes = { day: '2-digit', month: 'long', year: 'numeric' };
+
+    // Retorna a data formatada no formato "02 de julho de 2024"
+    return dataObjeto.toLocaleDateString('pt-BR', opcoes);
 }

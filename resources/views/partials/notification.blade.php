@@ -49,7 +49,7 @@
                     </div>
                     <div class="ms-3 text-sm font-normal w-64">${text}</div>
                 </div>
-            </div> 
+            </div>
         `);
 
         $('#notifications-container').append(notification);
@@ -60,9 +60,10 @@
             setTimeout(() => {
                 notification.remove();
                 notificationCount--; // Decrementando o contador de notificações
+
                 // Reajustar a posição vertical das notificações restantes
                 $('#notifications-container').children().each(function(index) {
-                    $(this).css('top', `${10 + index * 70}px`);
+                    $(this).css('top', `${10 + index * 80}px`);
                 });
             }, 500); // Remove o elemento após o desaparecimento
         }, 3000);

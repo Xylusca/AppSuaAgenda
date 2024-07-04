@@ -119,6 +119,20 @@
     .fc-toolbar-title {
         text-transform: capitalize;
     }
+
+    .left-1-2 {
+        left: 49%;
+    }
+
+    .bg-black {
+        background-color: #000000;
+    }
+
+    .bg-opacity-50 {
+        --tw-bg-opacity: 1;
+        background-color: rgba(0 0 0 / 60%);
+        backdrop-filter: blur(8px);
+    }
 </style>
 
 <!-- Livewire Styles -->

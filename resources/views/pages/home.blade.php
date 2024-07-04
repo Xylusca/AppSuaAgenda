@@ -3,11 +3,29 @@
 @section('content')
 
 <style>
+    :root {
+        --cor-principal: rgba(76, 91, 106, 0.5);
+        /* Exemplo de um verde */
+    }
+
     .btn-fixed {
         position: fixed;
         bottom: 55px;
         right: 20px;
         z-index: 1;
+    }
+
+    .bkfd {
+        background-color: var(--cor-principal);
+        margin: 0.5rem 0;
+    }
+
+    .text-green {
+        color: green;
+    }
+
+    .fc-view-harness {
+        background-color: var(--cor-principal);
     }
 </style>
 
@@ -18,7 +36,7 @@
 <x-filament::modal width="4xl" dark id="myModal">
     <!-- button Cart  -->
     <x-slot name="trigger">
-        <x-filament::button icon="heroicon-s-shopping-cart" class="btn-fixed" @click="showCart()">
+        <x-filament::button icon="heroicon-s-shopping-cart" class="btn-fixed border" @click="showCart()">
             <span id="cart-count" class="hidden"></span>
         </x-filament::button>
     </x-slot>
@@ -28,6 +46,7 @@
             <span>Voltar</span>
         </x-filament::button>
     </x-slot>
+
 
     <!-- Cart -->
     <div class="bg-white dark:bg-gray-900 dark:text-white p-8" id="cart_cont">
@@ -73,6 +92,10 @@
 
     <!-- Calendar -->
     <div class="row transition-opacity duration-500 delay-100" id="calendar_cont">
+        <div class="bkfd text-center p-2 rounded">
+            <h2 class="text-center font-bold text-xl mb-2">Dias Disponíveis</h2>
+            <p class="text-sm">Para continuar o agendamento, clique nos dias em <strong class="text-green">verde</strong> no calendário abaixo.</p>
+        </div>
         <div id='calendar'></div>
     </div>
 
@@ -82,6 +105,10 @@
 
     <!-- Available Time -->
     <div id="scheduling_available_time" class="hidden">
+        <div class="bkfd text-center p-2 rounded">
+            <h2 class="text-center font-bold text-xl mb-2">Informações Pessoais</h2>
+            <p class="text-sm">Para finalizar o agendamento previsto para o dia <strong id="StrongDateAvailableTime"></strong>, por favor, preencha os campos abaixo.</p>
+        </div>
         <form action="" method="post">
             <input type="hidden" id="schedulingData" name="schedulingData">
 
