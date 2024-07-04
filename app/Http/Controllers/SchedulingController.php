@@ -94,11 +94,13 @@ class SchedulingController extends Controller
             $eventStartTime = Carbon::parse($event->start_time);
             $eventEndTime = Carbon::parse($event->end_time);
 
-            if ($lastEndTime->diffInMinutes($eventStartTime) >= $totalServiceTime) {
-                $availableSlots = array_merge($availableSlots, $this->getIntervals($lastEndTime, $eventStartTime, $totalServiceTime, $closeTime));
-            }
+            if ($eventStartTime >= $openTime) {
+                if ($lastEndTime->diffInMinutes($eventStartTime) >= $totalServiceTime) {
+                    $availableSlots = array_merge($availableSlots, $this->getIntervals($lastEndTime, $eventStartTime, $totalServiceTime, $closeTime));
+                }
 
-            $lastEndTime = $eventEndTime;
+                $lastEndTime = $eventEndTime;
+            }
         }
 
         if ($lastEndTime->diffInMinutes($closeTime) >= $totalServiceTime) {
@@ -137,40 +139,53 @@ class SchedulingController extends Controller
 
     public function schedule(Request $request): JsonResponse
     {
-        $validatedData = $request->validate([
-            'name' => 'required|string|max:255',
-            'whatsapp' => 'required|string|max:15',
-            'schedulingData' => 'required|date_format:d/m/Y H:i:s',
-            'id_services' => 'required|string',
-        ]);
-
-        $servicesSelected = $this->parseServiceIds($validatedData['id_services']);
-        $totalServiceTime = $this->calculateTotalServiceTime($servicesSelected);
-
-        $startDateTime = Carbon::createFromFormat('d/m/Y H:i:s', $validatedData['schedulingData']);
-        $endDateTime = (clone $startDateTime)->addMinutes($totalServiceTime);
-
-        $data = $this->prepareSchedulingData($validatedData, $startDateTime, $endDateTime);
-
-        DB::beginTransaction();
-
         try {
-            $scheduling = Scheduling::create($data);
-            $this->createServiceSchedulingRecords($scheduling->id, $servicesSelected);
+            $validatedData = $request->validate([
+                'name' => 'required|string|max:255',
+                'whatsapp' => 'required|string|max:15',
+                'schedulingData' => 'required|date_format:d/m/Y H:i:s',
+                'id_services' => 'required|string',
+            ]);
+
+            $servicesSelected = $this->parseServiceIds($validatedData['id_services']);
+
+            $totalServiceTime = $this->calculateTotalServiceTime($servicesSelected);
+
+            $startDateTime = Carbon::createFromFormat('d/m/Y H:i:s', $validatedData['schedulingData']);
+            $endDateTime = $startDateTime->copy()->addMinutes($totalServiceTime);
+
+            $data = $this->prepareSchedulingData($validatedData, $startDateTime, $endDateTime);
+
+            DB::beginTransaction();
+
+            // Verifica se já existe um agendamento com as mesmas datas
+            $isDuplicate = Scheduling::where(['start_time' => $startDateTime, 'end_time' => $endDateTime])->exists();
+
+            if ($isDuplicate) {
+                $data_response = [
+                    'message' => 'Já existe um registro com essas datas.',
+                    'type' => 'warning '
+                ];
+            } else {
+                $scheduling = Scheduling::create($data);
+                $this->createServiceSchedulingRecords($scheduling->id, $servicesSelected);
+
+                $data_response = [
+                    'message' => 'Seu agendamento foi salvo com sucesso!',
+                    'type' => 'success'
+                ];
+            }
 
             DB::commit();
 
-            return response()->json([
-                'message' => 'Seu agendamento foi salvo com sucesso!',
-                'type' => 'success'
-            ], 201);
+            return response()->json($data_response, 201);
         } catch (\Exception $e) {
             DB::rollBack();
             Log::error('Error creating scheduling: ', ['error' => $e->getMessage()]);
 
             return response()->json([
                 'message' => 'Erro ao salvar o agendamento, tente novamente mais tarde.',
-                'type' => 'error'
+                'type' => 'danger'
             ], 500);
         }
     }
