@@ -4,15 +4,15 @@
             height: 15rem !important;
         }
 
-        .fs-h5-mobile{
+        .fs-h5-mobile {
             font-size: 2rem;
         }
 
-        .fs-p-mobile{
+        .fs-p-mobile {
             font-size: 1.3rem;
         }
 
-        .owl-carousel .owl-item img{
+        .owl-carousel .owl-item img {
             height: 22rem;
         }
     }
@@ -52,7 +52,12 @@
                     items: 1,
                     nav: false,
                 },
-                600: {
+                500: {
+                    items: 2,
+                    loop: false,
+                    nav: true,
+                },
+                800: {
                     items: 3,
                     loop: false,
                     nav: true,
