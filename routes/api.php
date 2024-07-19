@@ -19,5 +19,6 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
     return $request->user();
 });
 
-Route::post('/available-days', [SchedulingController::class, 'availableDays']);
-Route::post('/schedule', [SchedulingController::class, 'schedule']);
+Route::get('/available-days', [SchedulingController::class, 'availableDays']);
+Route::get('/schedule', [SchedulingController::class, 'schedule']);
+Route::get('/check-appointment', [SchedulingController::class, 'checkAppointment']);

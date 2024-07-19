@@ -14,29 +14,37 @@ use Illuminate\Support\Facades\Log;
 
 class SchedulingController extends Controller
 {
+    /**
+     * Fetches available days for scheduling appointments based on service duration,
+     * working hours, and existing scheduled events.
+     *
+     * @param Request $request Incoming request containing service IDs.
+     * @return JsonResponse Response with available days and times or error message.
+     * @throws Exception If an unexpected error occurs.
+     */
     public function availableDays(Request $request): JsonResponse
     {
-        $validatedData = $request->validate([
-            'id_services' => 'required|string',
-        ]);
+        try {
+            $validatedData = $request->validate([
+                'id_services' => 'required|string',
+            ]);
 
-        $servicesSelected = $this->parseServiceIds($validatedData['id_services']);
-        $totalServiceTime = $this->calculateTotalServiceTime($servicesSelected);
+            $servicesSelected = array_map('intval', explode(',', $validatedData['id_services']));
+            $totalServiceTime = $this->calculateTotalServiceTime($servicesSelected);
 
-        $now = Carbon::now();
-        $today = $now->copy()->startOfDay();
-        $futureDate = $today->copy()->addDays(40);
+            $now = Carbon::now();
+            $today = $now->copy()->startOfDay();
+            $futureDate = $today->copy()->addDays(40);
 
-        $scheduledEvents = $this->getScheduledEvents($today, $futureDate);
+            $scheduledEvents = $this->getScheduledEvents($today, $futureDate);
 
-        $availableDays = $this->calculateAvailableDays($today, $futureDate, $scheduledEvents, $totalServiceTime, $now);
+            $availableDays = $this->calculateAvailableDays($today, $futureDate, $scheduledEvents, $totalServiceTime, $now);
 
-        return response()->json($availableDays);
-    }
-
-    private function parseServiceIds(string $serviceIds): array
-    {
-        return array_map('intval', explode(',', $serviceIds));
+            return response()->json($availableDays, 200);
+        } catch (\Exception $e) {
+            Log::error('Error query scheduling: ', ['error' => $e->getMessage()]);
+            return response()->json($this->createMessageArray('Erro interno do servidor', 'danger'), 500);
+        }
     }
 
     private function calculateTotalServiceTime(array $serviceIds): int
@@ -51,6 +59,17 @@ class SchedulingController extends Controller
             ->get();
     }
 
+    /**
+     * Calculates available days considering working hours, existing events,
+     * and service duration.
+     *
+     * @param Carbon $startDate Start date of the availability check.
+     * @param Carbon $endDate End date of the availability check.
+     * @param Collection $scheduledEvents Collection of scheduled events.
+     * @param int $totalServiceTime Total duration of the requested services (in minutes).
+     * @param Carbon $now Current date and time.
+     * @return array Array of available days with their details.
+     */
     private function calculateAvailableDays(Carbon $startDate, Carbon $endDate, $scheduledEvents, int $totalServiceTime, Carbon $now): array
     {
         $availableDays = [];
@@ -114,7 +133,6 @@ class SchedulingController extends Controller
     {
         $intervals = [];
 
-        // Corrigir para garantir que os intervalos comecem a partir do horário de abertura
         while ($start->copy()->addMinutes($duration)->lessThanOrEqualTo($end) && $start->lessThanOrEqualTo($closeTime)) {
             if ($start->copy()->addMinutes($duration)->lessThanOrEqualTo($closeTime)) {
                 $intervals[] = $start->format('H:i:s');
@@ -137,6 +155,13 @@ class SchedulingController extends Controller
         ];
     }
 
+    /**
+     * Schedules an appointment based on provided information and validates for conflicts.
+     *
+     * @param Request $request Incoming request containing appointment details.
+     * @return JsonResponse Response with success or error message.
+     * @throws Exception If an unexpected error occurs.
+     */
     public function schedule(Request $request): JsonResponse
     {
         try {
@@ -183,10 +208,7 @@ class SchedulingController extends Controller
             DB::rollBack();
             Log::error('Error creating scheduling: ', ['error' => $e->getMessage()]);
 
-            return response()->json([
-                'message' => 'Erro ao salvar o agendamento, tente novamente mais tarde.',
-                'type' => 'danger'
-            ], 500);
+            return response()->json($this->createMessageArray('Erro ao salvar o agendamento, tente novamente mais tarde.', 'danger'), 500);
         }
     }
 
@@ -209,5 +231,62 @@ class SchedulingController extends Controller
                 'service_id' => $serviceId,
             ]);
         }
+    }
+
+    /**
+     * Queries a booking based on the information provided and validates conflicts.
+     *
+     * @param Request $request Incoming request containing appointment details.
+     * @return JsonResponse Response with success or error message.
+     * @throws Exception If an unexpected error occurs.
+     */
+    public function checkAppointment(Request $request): JsonResponse
+    {
+        try {
+            $validatedData = $request->validate([
+                'whatsapp' => 'required|string|max:15',
+            ]);
+
+            $scheduling = Scheduling::where('whats', $validatedData['whatsapp'])
+                ->orderBy('start_time', 'desc')
+                ->with('services_schedulings.service')
+                ->limit(10)
+                ->get();
+
+            $scheduling->transform(function ($item) {
+                $totalPrice = 0;
+
+                foreach ($item->services_schedulings as $serviceScheduling) {
+                    $totalPrice += $serviceScheduling->service->price;
+                }
+
+                return [
+                    'name' => $item->name,
+                    'whats' => $item->whats,
+                    'start_time' =>  date('d/m/Y H:i', strtotime($item->start_time)),
+                    'status' => $item->status,
+                    'totalPrice' => number_format($totalPrice, 2, ',', '.'),
+                ];
+            });
+
+            return response()->json($this->createMessageArray('Consulta realizada com sucesso', 'success', $scheduling), 200);
+        } catch (\Exception $e) {
+            Log::error('Error query scheduling: ', ['error' => $e->getMessage()]);
+            return response()->json($this->createMessageArray('Erro interno do servidor', 'danger'), 500);
+        }
+    }
+
+    private function createMessageArray(string $msg, string $type = 'success', $data = null): array
+    {
+        $data_response = [
+            'message' => $msg,
+            'type' => $type,
+        ];
+
+        if ($data !== null) {
+            $data_response['data'] = $data;
+        }
+
+        return $data_response;
     }
 }

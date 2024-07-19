@@ -17,7 +17,6 @@
 
     .bkfd {
         background-color: var(--cor-principal);
-        margin: 0.5rem 0;
     }
 
     .text-green {
@@ -30,6 +29,10 @@
 
     .ml-btn {
         margin-left: 0.5rem;
+    }
+
+    .mb-3 {
+        margin-bottom: 0.5rem;
     }
 </style>
 

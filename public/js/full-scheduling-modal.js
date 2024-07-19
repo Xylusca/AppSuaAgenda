@@ -167,7 +167,7 @@ function calendarScheduling() {
             events: function (fetchInfo, successCallback, failureCallback) {
                 $.ajax({
                     url: '/api/available-days',
-                    method: 'POST',
+                    method: 'GET',
                     data: {
                         id_services: cart.map(function (item) {
                             return item.id;
@@ -287,7 +287,7 @@ function scheduling() {
 
         $.ajax({
             url: '/api/schedule',
-            method: 'POST',
+            method: 'GET',
             data: {
                 name: name,
                 whatsapp: whatsapp,
@@ -342,53 +342,101 @@ function formatarDataExtenso(data) {
     return dataObjeto.toLocaleDateString('pt-BR', opcoes);
 }
 
-// //  Scheduling Available Time
-// function checkAppointment() {
-//     $('#load').removeClass('hidden')
+//  Scheduling Available Time
+function checkAppointment() {
+    $('#load').removeClass('hidden')
 
-//     var whatsapp = $('#check_appointment_whatsapp').val();
+    var whatsapp = $('#check_appointment_whatsapp').val();
 
-//     if (whatsapp) {
-//         localStorage.setItem('whatsapp', whatsapp);
+    if (whatsapp) {
+        localStorage.setItem('whatsapp', whatsapp);
 
-//         $.ajax({
-//             url: '/api/schedule',
-//             method: 'GET',
-//             data: {
-//                 whatsapp: whatsapp,
-//             },
-//             dataType: 'json',
-//             success: function (response) {
-//                 if (response['type'] === "success") {
-//                     showNotification(response['message'], response['type']);
-//                 } else {
-//                     showNotification(response['message'], response['type']);
-//                 }
-//                 renderModalContent(0)
+        $.ajax({
+            url: '/api/check-appointment',
+            method: 'GET',
+            data: {
+                whatsapp: whatsapp,
+            },
+            dataType: 'json',
+            success: function (response) {
+                if (response['type'] === "success") {
+                    $('#schedulingTableBody').empty();
+                    $('#msg-not-found').removeClass('hidden');
 
-//                 $('#load').addClass('hidden')
-//             },
-//             error: function (xhr, status, error) {
-//                 if (xhr.responseJSON && xhr.responseJSON.errors) {
-//                     var errors = xhr.responseJSON.errors;
-//                     for (var key in errors) {
-//                         if (errors.hasOwnProperty(key)) {
-//                             var errorMessages = errors[key];
-//                             errorMessages.forEach(function (error) {
-//                                 showNotification(error, 'danger');
-//                             });
-//                         }
-//                     }
-//                 } else {
-//                     showNotification("Ocorreu um erro desconhecido.", 'danger');
-//                 }
+                    if (response.data) {
+                        $.each(response.data, function (index, item) {
+                            var newRow = rowTable(item.start_time, item.status, item.totalPrice);
+                            $('#msg-not-found').addClass('hidden');
+                            $('#schedulingTableBody').append(newRow);
+                        });
 
-//                 $('#load').addClass('hidden')
-//                 failureCallback(error);
-//             }
-//         });
-//     } else {
-//         showNotification("Por favor, preencha os campo 'WhatsApp'", 'warning');
-//         $('#load').addClass('hidden')
-//     }
-// }
+                    }
+                } else {
+                    showNotification(response['message'], response['type']);
+                }
+                renderModalContent(0)
+
+                $('#load').addClass('hidden')
+            },
+            error: function (xhr, status, error) {
+                if (xhr.responseJSON && xhr.responseJSON.errors) {
+                    var errors = xhr.responseJSON.errors;
+                    for (var key in errors) {
+                        if (errors.hasOwnProperty(key)) {
+                            var errorMessages = errors[key];
+                            errorMessages.forEach(function (error) {
+                                showNotification(error, 'danger');
+                            });
+                        }
+                    }
+                } else {
+                    showNotification("Ocorreu um erro desconhecido.", 'danger');
+                }
+
+                $('#load').addClass('hidden')
+                failureCallback(error);
+            }
+        });
+    } else {
+        showNotification("Por favor, preencha os campo 'WhatsApp'", 'warning');
+        $('#load').addClass('hidden')
+    }
+}
+
+function rowTable(date, status, totalPrice) {
+    var statusClass = '';
+    var statusLabel = '';
+
+    switch (status) {
+        case 'Concluído':
+            statusClass = 'bg-con';
+            statusLabel = 'Concluído';
+            break;
+        case 'Aguardando':
+            statusClass = 'bkfd';
+            statusLabel = 'Aguardando';
+            break;
+        case 'Cancelado':
+            statusClass = 'bg-can ';
+            statusLabel = 'Cancelado';
+            break;
+        default:
+            statusClass = 'bg-gray';
+            statusLabel = status;
+            break;
+    }
+
+    var newRow = '<tr>';
+
+    newRow = '<tr>' +
+        '   <td class="border-b border-slate-100 dark:border-slate-700 p-4 pl-8 text-slate-500 dark:text-slate-400">' + date + '</td>' +
+        '   <td class="border-b border-slate-100 dark:border-slate-700 p-4 pl-8 text-slate-500 dark:text-slate-400">' +
+        '   <lable class="p-2 rounded ' + statusClass + '">' + statusLabel + '</lable>' +
+        '       </td>' +
+        '   <td class="border-b border-slate-100 dark:border-slate-700 p-4 pl-8 text-slate-500 dark:text-slate-400">R$ ' + totalPrice + '</td>' +
+        '</tr>';
+
+    newRow = newRow;
+
+    return newRow;
+}
