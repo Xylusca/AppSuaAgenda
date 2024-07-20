@@ -171,8 +171,7 @@ class SchedulingController extends Controller
                 'schedulingData' => 'required|date_format:d/m/Y H:i:s',
                 'id_services' => 'required|string',
             ]);
-
-            $servicesSelected = $this->parseServiceIds($validatedData['id_services']);
+            $servicesSelected = array_map('intval', explode(',', $validatedData['id_services']));
 
             $totalServiceTime = $this->calculateTotalServiceTime($servicesSelected);
 
