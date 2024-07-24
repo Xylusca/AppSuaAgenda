@@ -89,9 +89,11 @@ class SchedulingsResource extends Resource
         return $table
             ->columns([
                 TextColumn::make('name')
-                    ->label('Nome Do Cliente'),
+                    ->label('Nome Do Cliente')
+                    ->searchable(),
                 TextColumn::make('whats')
-                    ->label('WhatsApp'),
+                    ->label('WhatsApp')
+                    ->searchable(),
                 TextColumn::make('start_time')
                     ->label('Início')
                     ->dateTime('d/m/Y H:i', 'America/Sao_Paulo'),
@@ -111,7 +113,30 @@ class SchedulingsResource extends Resource
                     ->label('Servicos'),
             ])
             ->filters([
-                //
+                Tables\Filters\SelectFilter::make('status')
+                    ->label('Status')
+                    ->options([
+                        'Aguardando' => 'Aguardando',
+                        'Cancelado' => 'Cancelado',
+                        'Concluído' => 'Concluído',
+                    ]),
+                Tables\Filters\Filter::make('start_time')
+                    ->form([
+                        Forms\Components\DatePicker::make('created_from')->label('Data de início'),
+                        Forms\Components\DatePicker::make('created_until')->label('Data de Encerramento'),
+                    ])
+                    ->query(function (Builder $query, array $data): Builder {
+                        return $query
+                            ->when(
+                                $data['created_from'],
+                                fn (Builder $query, $date): Builder => $query->whereDate('start_time', '>=', $date),
+                            )
+                            ->when(
+                                $data['created_until'],
+                                fn (Builder $query, $date): Builder => $query->whereDate('start_time', '<=', $date),
+                            );
+                    }),
+
             ])
             ->actions([
                 Tables\Actions\EditAction::make(),

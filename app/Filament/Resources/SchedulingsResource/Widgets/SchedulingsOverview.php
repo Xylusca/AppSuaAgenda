@@ -17,6 +17,19 @@ class SchedulingsOverview extends FullCalendarWidget
 
     // protected static string $view = 'filament.resources.schedulings-resource.widgets.schedulings-overview';
 
+    public function config(): array
+    {
+        return [
+            'firstDay' => 1,
+            'headerToolbar' => [
+                'left' => 'dayGridMonth,dayGridWeek',
+                'center' => 'title',
+                'right' => 'prev,next',
+            ],
+            'aspectRatio' => 1.35,
+        ];
+    }
+
     /**
      * FullCalendar will call this function whenever it needs new event data.
      * This is triggered when the user clicks prev/next or switches views on the calendar.

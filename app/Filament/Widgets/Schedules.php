@@ -16,6 +16,19 @@ class Schedules extends FullCalendarWidget
 
     public Model | string | null $model = Scheduling::class;
 
+    public function config(): array
+    {
+        return [
+            'firstDay' => 1,
+            'headerToolbar' => [
+                'left' => 'dayGridMonth,dayGridWeek',
+                'center' => 'title',
+                'right' => 'prev,next',
+            ],
+            'aspectRatio' => 1.35,
+        ];
+    }
+
     public function fetchEvents(array $fetchInfo): array
     {
         return Scheduling::query()
@@ -31,7 +44,7 @@ class Schedules extends FullCalendarWidget
                         'Aguardando' => 'yellow',
                         'Concluído' => 'info',
                         'Cancelado' => 'red',
-                        default => 'gray', // Cor padrão para outros status
+                        default => 'gray',
                     },
                     'url' => SchedulingsResource::getUrl(name: 'edit', parameters: ['record' => $scheduling]),
                     'shouldOpenUrlInNewTab' => false

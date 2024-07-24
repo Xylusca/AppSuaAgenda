@@ -71,7 +71,7 @@ class AdminPanelProvider extends PanelProvider
                     // ->locale()
                     // ->plugins()
                     ->config([
-                        'dayMaxEvents' => true
+                        'dayMaxEvents' => 3
                     ])
             )
             ->authMiddleware([
