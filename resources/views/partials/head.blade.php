@@ -18,7 +18,19 @@
     }
 </style>
 
-<link rel="icon" href="{{asset('imgs/logo-nd-branquelo-fundo.png')}}" type="image/x-icon">
+<meta property="og:title" content="Nando Cortes - Barbearia de Excelência em Corte de Cabelo">
+<meta property="og:description" content="Bem-vindo à Nando Cortes, a barbearia onde estilo e precisão se encontram. Oferecemos cortes de cabelo personalizados e serviços de barbearia de alta qualidade em um ambiente moderno e acolhedor. Venha nos visitar e transforme seu visual!">
+<meta property="og:image" content="{{asset('imgs/logo-nd-negrao.png')}}">
+<meta property="og:url" content="https://nando-cortes.costcontrol.com.br">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://nando-cortes.costcontrol.com.br">
+
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Nando Cortes - Barbearia de Excelência em Corte de Cabelo">
+<meta name="twitter:description" content="Bem-vindo à Nando Cortes, a barbearia onde estilo e precisão se encontram. Oferecemos cortes de cabelo personalizados e serviços de barbearia de alta qualidade em um ambiente moderno e acolhedor. Venha nos visitar e transforme seu visual!">
+<meta name="twitter:image" content="{{asset('imgs/logo-nd-negrao.png')}}">
+
+<link rel="icon" href="{{asset('imgs/logo-nd-negrao.png')}}" type="image/x-icon">
 
 <link href="{{asset('css/filament/forms/forms.css')}}" rel="stylesheet" />
 <link href="{{asset('css/filament/support/support.css')}}" rel="stylesheet" />
