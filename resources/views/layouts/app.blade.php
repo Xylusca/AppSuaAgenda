@@ -4,7 +4,22 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{{$title}} - {{ config('app.name') }}</title>
+    <title>Nando Cortes - Barbearia de Excelência em Corte de Cabelo</title>
+    <meta name="description" content="Bem-vindo à Nando Cortes, a barbearia onde estilo e precisão se encontram. Oferecemos cortes de cabelo personalizados e serviços de barbearia de alta qualidade em um ambiente moderno e acolhedor. Venha nos visitar e transforme seu visual!">
+
+    <!-- Open Graph Meta Tags -->
+    <meta property="og:title" content="Nando Cortes - Barbearia de Excelência em Corte de Cabelo">
+    <meta property="og:description" content="Bem-vindo à Nando Cortes, a barbearia onde estilo e precisão se encontram. Oferecemos cortes de cabelo personalizados e serviços de barbearia de alta qualidade em um ambiente moderno e acolhedor. Venha nos visitar e transforme seu visual!">
+    <meta property="og:image" content="https://nando-cortes.costcontrol.com.br/imgs/logo-nd-branquelo-fundo.png">
+    <meta property="og:url" content="https://nando-cortes.costcontrol.com.br/">
+    <meta property="og:type" content="website">
+
+    <!-- Twitter Meta Tags -->
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="Nando Cortes - Barbearia de Excelência em Corte de Cabelo">
+    <meta name="twitter:description" content="Bem-vindo à Nando Cortes, a barbearia onde estilo e precisão se encontram. Oferecemos cortes de cabelo personalizados e serviços de barbearia de alta qualidade em um ambiente moderno e acolhedor. Venha nos visitar e transforme seu visual!">
+    <meta name="twitter:image" content="https://nando-cortes.costcontrol.com.br/imgs/logo-nd-branquelo-fundo.png">
+
     <!-- Incluir CSS -->
 
     @include('partials.head')
